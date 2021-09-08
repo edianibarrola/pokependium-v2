@@ -99,3 +99,51 @@ def add_set():
     db.session.commit()
     newDict = new_set.serialize()
     return jsonify(newDict), 200 
+
+@api.route('/apiset', methods=['POST']) #Adds a new set to the list 
+def add_all_sets():
+    all_sets_info = request.get_json()
+    if all_sets_info is None:
+        raise APIException("Your JSON body is wrong", 400)
+    for set_info in all_sets_info:
+        new_set= CardSet(
+            setId =set_info['setId'],
+            name=set_info['name'],
+            series=set_info['series'],
+            printedTotal=set_info['printedTotal'],
+            total=set_info['total'],
+            ptcgoCode=set_info['ptcgoCode'],
+            releaseDate=set_info['releaseDate'],
+            updatedAt=set_info['updatedAt'],
+            symbolUrl=set_info['symbolUrl'],
+            logoUrl=set_info['logoUrl']
+            
+            ) 
+        db.session.add(new_set) 
+        db.session.commit()
+        newDict = new_set.serialize()
+    return jsonify(newDict), 200 
+
+@api.route('/test', methods=['POST']) #Adds a new set to the list 
+def add_all_sets_test():
+    all_sets_info = request.get_json()
+    if all_sets_info is None:
+        raise APIException("Your JSON body is wrong", 400)
+    for set_info in all_sets_info:
+        new_set= CardSet(
+            setId =set_info['id'],
+            name=set_info['name'],
+            series=set_info['series'],
+            printedTotal=set_info['printedTotal'],
+            total=set_info['total'],
+            ptcgoCode=set_info['ptcgoCode'],
+            releaseDate=set_info['releaseDate'],
+            updatedAt=set_info['updatedAt'],
+            symbolUrl=set_info['images']['symbol'],
+            logoUrl=set_info['images']['logo']
+            
+            ) 
+        db.session.add(new_set) 
+        db.session.commit()
+        newDict = new_set.serialize()
+    return jsonify(newDict), 200 
