@@ -11,6 +11,7 @@ import { Dashboard } from "./pages/Dashboard";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
 import { SecurePage } from "./component/SecurePage";
+import { SetList } from "./pages/setlist";
 
 //create your first component
 const Layout = () => {
@@ -25,6 +26,10 @@ const Layout = () => {
 					<Switch>
 						<Route exact path="/">
 							<Home />
+						</Route>
+
+						<Route exact path="/sets">
+							<SetList />
 						</Route>
 
 						<Route exact path="/register">

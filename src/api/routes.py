@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User
+from api.models import db, User, CardSet
 # from flask_cors import CORS
 from api.utils import generate_sitemap, APIException
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
@@ -66,3 +66,36 @@ def userinfo():
     }
 
     return jsonify(response_body), 200
+
+    
+@api.route('/set', methods=['GET'])
+def getAllSets():
+    all_sets = CardSet.query.all()
+    all_sets = list(map(lambda x: x.serialize(), all_sets))
+    response_body = {
+        "msg": "Here are all of the sets."
+    }
+    return jsonify(all_sets), 200
+
+@api.route('/set', methods=['POST']) #Adds a new set to the list 
+def add_set():
+    set_info = request.get_json()
+    if set_info is None:
+        raise APIException("Your JSON body is wrong", 400)
+    new_set= CardSet(
+        setId =set_info['setId'],
+        name=set_info['name'],
+        series=set_info['series'],
+        printedTotal=set_info['printedTotal'],
+        total=set_info['total'],
+        ptcgoCode=set_info['ptcgoCode'],
+        releaseDate=set_info['releaseDate'],
+        updatedAt=set_info['updatedAt'],
+        symbolUrl=set_info['symbolUrl'],
+        logoUrl=set_info['logoUrl']
+        
+        ) 
+    db.session.add(new_set) 
+    db.session.commit()
+    newDict = new_set.serialize()
+    return jsonify(newDict), 200 

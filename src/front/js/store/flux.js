@@ -1,6 +1,10 @@
+import { AllSets } from "../../../../data/sets/sets.js";
+
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
+			setList: [],
+			currentSet: [],
 			message: null,
 			authToken: null,
 			authError: null
@@ -52,7 +56,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					.catch(error => setStore({ authError: error, authToken: null }));
 			},
 
-			logout: () => setStore({ authToken: null }),
+			logout: () => setStore({ authToken: { ...null } }),
 
 			loginUser: (email, password) => {
 				fetch(process.env.BACKEND_URL + "/api/login", {
@@ -72,8 +76,28 @@ const getState = ({ getStore, getActions, setStore }) => {
 					})
 					.then(data => setStore({ authToken: data.token, authError: null }))
 					.catch(error => setStore({ authToken: null, authError: error }));
-			}
-		}
+			},
+
+			getSets: () => {
+				// fetching data from the backend
+
+				setStore({ setList: AllSets });
+			},
+			setCurrentSetID: setID => {
+				const store = getStore();
+				const actions = getActions();
+
+				setStore({ currentSetID: setID });
+				actions.getCardsForSet(setID);
+			},
+		
+		getCardsForSet: setID => {
+			// fetching all cards from specific set from the pokemontcg.io
+			fetch(`https://api.pokemontcg.io/v2/cards?q=set.id:${setID}&orderBy=number`)
+				.then(resp => resp.json())
+				.then(data => setStore({ currentSet: data }))
+				.catch(error => console.log("Error fetching Cards from pokemontcg.io api", error));
+		}},
 	};
 };
 
